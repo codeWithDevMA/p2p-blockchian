@@ -5,7 +5,6 @@ console.log(privateIp);
 exports.getPeers = (port) => {
   return new Promise((resolve, reject) => {
     const ws = new WebSocket(`ws://${privateIp}:4000`);
-
     ws.addEventListener("open", () => {
       console.log("Connected to server");
       ws.send(port);
