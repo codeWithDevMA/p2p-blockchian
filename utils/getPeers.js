@@ -1,8 +1,10 @@
 const WebSocket = require("ws");
+const privateIp = require("../utils/getAddress");
+console.log(privateIp);
 
 exports.getPeers = (port) => {
   return new Promise((resolve, reject) => {
-    const ws = new WebSocket("ws://192.168.8.100:4000");
+    const ws = new WebSocket(`ws://${privateIp}:4000`);
 
     ws.addEventListener("open", () => {
       console.log("Connected to server");

@@ -1,12 +1,16 @@
 const os = require("os");
-exports.getAddress = (port) => {
-  const interfaces = os.networkInterfaces();
-  for (const name in interfaces) {
-    const iface = interfaces[name];
-    for (const entry of iface) {
-      if (entry.family === "IPv4" && !entry.internal) {
-        return `ws://${entry.address}:${port}`;
-      }
+
+// Find the private IP address of this machine
+let privateIp;
+
+const interfaces = os.networkInterfaces();
+
+Object.keys(interfaces).forEach((name) => {
+  interfaces[name].forEach((info) => {
+    if (!info.internal && info.family === "IPv4") {
+      privateIp = info.address;
     }
-  }
-};
+  });
+});
+
+module.exports = privateIp;
