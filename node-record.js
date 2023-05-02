@@ -1,6 +1,21 @@
 const WebSocket = require("ws");
+const os = require("os");
 
-const senders = ["ws://192.168.8.100:3002"];
+// Find the private IP address of this machine
+let privateIp;
+
+const interfaces = os.networkInterfaces();
+
+Object.keys(interfaces).forEach((name) => {
+  interfaces[name].forEach((info) => {
+    if (!info.internal && info.family === "IPv4") {
+      privateIp = info.address;
+    }
+  });
+});
+console.log(privateIp);
+
+const senders = [`ws://${privateIp}:3002`];
 const wss = new WebSocket.Server({ port: 4000 });
 let portsender;
 wss.on("connection", (ws, req) => {
