@@ -1,6 +1,8 @@
 const Block = require("./Block");
 const Transaction = require("./Transaction");
 const Database = require("./Database");
+const EC = require("elliptic").ec;
+const ec = new EC("secp256k1");
 
 class Blockchain {
   constructor() {
@@ -63,7 +65,7 @@ class Blockchain {
     return false;
   }
 
-  mineBlock(rewardAddress, praviteKey) {
+  mineBlock(rewardAddress, privateKey) {
     let gas = 0;
     if (this.transactions.length > 10) {
       const txns = this.transactions.splice(0, 10);
@@ -71,12 +73,13 @@ class Blockchain {
         gas += transaction.gas;
       });
       const rewardTransaction = new Transaction(
-        null,
+        "00000000000000000000",
         rewardAddress,
         this.reward + gas
       );
-      rewardTransaction.sign(praviteKey);
-      const blockTransactions = [rewardTransaction, ...this.transactions];
+      const keyPair = ec.keyFromPrivate(privateKey);
+      rewardTransaction.sign(keyPair);
+      const blockTransactions = [rewardTransaction, ...txns];
       this.addBlock(
         new Block(this.chain.length, Date.now().toString(), blockTransactions)
       );

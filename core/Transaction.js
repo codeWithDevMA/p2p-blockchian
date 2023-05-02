@@ -1,7 +1,7 @@
-const { Wmcoin } = require("./main");
 const { SHA256 } = require("../utils/sha256");
+
 class Transaction {
-  constructor(from, to, amount, gas = 0, signature) {
+  constructor(from, to, amount, gas = 0, signature = "") {
     this.from = from;
     this.to = to;
     this.amount = amount;
@@ -16,8 +16,8 @@ class Transaction {
         .toDER("hex");
     }
   }
-  static isValid(tx,chain) {
-    const { from , to, amount , signature} = tx;
+  static isValid(tx, chain) {
+    const { from, to, amount, signature } = tx;
     if (!from || !to || !amount || !signature) {
       console.log("Invalid transaction: Missing required fields");
       return false;
@@ -27,13 +27,14 @@ class Transaction {
       return false;
     }
     const balance = chain.getBalance(from);
-    if (balance <  parseInt(amount)) {
-      console.log(`Invalid transaction: Insufficient balance (${balance}) for sending amount (${amount})`);
+    if (balance < parseInt(amount)) {
+      console.log(
+        `Invalid transaction: Insufficient balance (${balance}) for sending amount (${amount})`
+      );
       return false;
     }
     return true;
   }
-
 }
 
-module.exports =  Transaction ;
+module.exports = Transaction;

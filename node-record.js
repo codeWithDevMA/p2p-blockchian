@@ -1,13 +1,15 @@
-const WebSocket = require('ws');
+const WebSocket = require("ws");
 
-const senders = ['ws://192.168.8.103:3002'];
-const wss = new WebSocket.Server({ port: 3000 });
+const senders = ["ws://192.168.8.100:3002"];
+const wss = new WebSocket.Server({ port: 4000 });
 let portsender;
-wss.on('connection', (ws, req) => {
-  const senderIp =(req.headers['x-forwarded-for'] || req.connection.remoteAddress).replace(/^::ffff:/, "");
+wss.on("connection", (ws, req) => {
+  const senderIp = (
+    req.headers["x-forwarded-for"] || req.connection.remoteAddress
+  ).replace(/^::ffff:/, "");
   console.log(`Connected to node: ${senderIp}`);
 
-  ws.on('message', async (message) => {
+  ws.on("message", async (message) => {
     console.log(`Received data from node ${senderIp}: ${message}`);
     portsender = message;
     if (senders.length === 0) {
@@ -15,32 +17,33 @@ wss.on('connection', (ws, req) => {
     } else {
       ws.send(JSON.stringify(senders));
     }
-    const address = `ws://${senderIp}:${message}`
+    const address = `ws://${senderIp}:${message}`;
     const ipExists = senders.some((sender) => sender === address);
     if (!ipExists) {
       senders.push(address);
     }
 
-    let filteredAddresses = senders.filter((addressIp) => addressIp !== address);
-    
-    ws.send(JSON.stringify(filteredAddresses))
-    console.log(senders);
-    filteredAddresses = []
+    let filteredAddresses = senders.filter(
+      (addressIp) => addressIp !== address
+    );
 
+    ws.send(JSON.stringify(filteredAddresses));
+    console.log(senders);
+    filteredAddresses = [];
   });
 
-  ws.on('error', (err) => {
+  ws.on("error", (err) => {
     console.error(`Error connecting to node: ${senderIp}: ${err}`);
   });
 
   // Handle disconnects
-  ws.on('close', () => {
+  ws.on("close", () => {
     console.log(`Disconnected from node : ${senderIp}:${portsender}`);
-    portsender=''
+    portsender = "";
   });
 });
 
-wss.on('listening', () => {
+wss.on("listening", () => {
   const address = wss.address();
   console.log(`Server listening on ${address.address}:${address.port}`);
 });
