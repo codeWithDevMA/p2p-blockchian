@@ -23,7 +23,7 @@ const ec = new EC("secp256k1");
 
 // create a new WebSocket server and attach it to the Express.js server
 const PORT = 3001;
-const MY_ADDRESS = `${PORT}${getAddress}`;
+const MY_ADDRESS = `${getAddress}:${PORT}`;
 
 let openedPeers = [];
 let connectedPeers = [];
